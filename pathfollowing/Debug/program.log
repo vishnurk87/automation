@@ -1,0 +1,24 @@
+﻿Build started 2020-03-27 3:18:46 PM.
+     1>Project "C:\Users\vishn\Documents\1_6621_6631\6631_automation\my_notes\pathfollowing\program.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\edit\image_transfer2_final_working\VC2012_atlmfc\VC\atlmfc\include /IC:\edit\image_transfer2_final_working\Windows_SDK7.1\Samples\multimedia\directshow\baseclasses /Zi /nologo /W3 /WX- /O2 /Ob2 /Oy /D WIN32 /D _DEBUG /D _CONSOLE /D CONSOLE_IO /D _VC80_UPGRADE=0x0600 /D _MBCS /GF /Gm- /EHsc /MTd /GS- /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Debug\\" /Fd".\Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt program.cpp
+         program.cpp
+     1>program.cpp(123): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>program.cpp(124): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>program.cpp(135): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>program.cpp(24): warning C4101: 'p' : unreferenced local variable
+     1>program.cpp(25): warning C4101: 'q' : unreferenced local variable
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\program.exe" /INCREMENTAL /NOLOGO mfplat.lib mf.lib mfreadwrite.lib mfuuid.lib shlwapi.lib propsys.lib strmbasd.lib odbc32.lib odbccp32.lib msvcrtd.lib winmm.lib wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libcd /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:".\Debug\program.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\program.lib" /MACHINE:X86 /SAFESEH .\Debug\program.obj
+         .\Debug\serial_com.obj
+         .\Debug\timer.obj
+         .\Debug\vision.obj
+         atlsnd.lib
+         image_transfer5.lib
+         strmbasd.lib
+         program.vcxproj -> C:\Users\vishn\Documents\1_6621_6631\6631_automation\my_notes\pathfollowing\.\Debug\program.exe
+     1>Done Building Project "C:\Users\vishn\Documents\1_6621_6631\6631_automation\my_notes\pathfollowing\program.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.65

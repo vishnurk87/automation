@@ -26,7 +26,7 @@ volatile uint8_t USART_TX_Buffer; // Global Buffer
 void setup()
 {	
 	
-	DDRB |= BIT(PB5);
+	DDRB |= BIT(DDB5);
 	uint8_t data[3];
 	data[0] = 'a';
 	data[1] = 'k';
@@ -35,6 +35,9 @@ void setup()
 	USART_init(BAUD_Prescalar);
 	//for (int i = 0; i<3; i++) 
 	//{
+
+	//give delay here to produce error free tx and rx, otherwise tw bytes were sent instread of one
+	delay(1000);
 		USART_TransmitInterrupt(data[1]);
 	//}
 	
@@ -44,8 +47,7 @@ void setup()
 void USART_TransmitInterrupt(uint8_t buffer)
 {	
 	USART_TX_Buffer = buffer;
-	UCSR0A &= ~UDRE0;
-	
+	UCSR0A |= UDRE0;
 	UCSR0B|= DATA_REG_EMPTY_INTERUPT;
 
 }
@@ -78,9 +80,12 @@ void USART_init(unsigned int baud_rate)
 }
 
 ISR(USART_UDRE_vect)
-{
+{	
+	PORTB &= ~BIT(PORTB5);
 	UDR0 = USART_TX_Buffer;
 	UCSR0B &= ~DATA_REG_EMPTY_INTERUPT; // Disables the Interrupt, uncomment for one time transmission of data
+	//delay(1000);
+	
 }
 void loop()
 {

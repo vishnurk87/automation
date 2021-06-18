@@ -13,7 +13,7 @@
 #define BAUD 9600		//baud rate setting
 //#define BAUD_Prescalar ((F_cpu/(8*BAUD))-1)
 #define BIT(a) (1 << (a))
-
+#define RX_READY_INTERUPT BIT(RXCIE0)
 #define TX_COMPLETE_INTERUPT_ON BIT(TXCIE0)
 #define DATA_REG_EMPTY_INTERUPT BIT(UDRIE0)
 #define DOUBLE_TX_SPEED BIT(U2X0)
@@ -22,6 +22,7 @@
 #define EVEN_PARITY BIT(UPM01)
 
 volatile uint8_t USART_TX_Buffer; // Global Buffer
+volatile uint8_t USART_RX_DATA; // Global RX
 
 void setup()
 {	
@@ -38,11 +39,21 @@ void setup()
 
 	//give delay here to produce error free tx and rx, otherwise tw bytes were sent instread of one
 	delay(1000);
-		USART_TransmitInterrupt(data[1]);
+	//USART_TransmitInterrupt(data[0]);
+	USART_Recieve();
 	//}
 	
 }
 
+
+
+void USART_Recieve()
+{	
+
+	//set recieve complete RXCn bit to 1 if necessary to initiate the interupt
+	UCSR0B|= RX_READY_INTERUPT;
+
+}
 
 void USART_TransmitInterrupt(uint8_t buffer)
 {	
@@ -79,14 +90,33 @@ void USART_init(unsigned int baud_rate)
  	
 }
 
+
+//interupts
+
 ISR(USART_UDRE_vect)
 {	
 	PORTB &= ~BIT(PORTB5);
 	UDR0 = USART_TX_Buffer;
 	UCSR0B &= ~DATA_REG_EMPTY_INTERUPT; // Disables the Interrupt, uncomment for one time transmission of data
 	//delay(1000);
-	
 }
+
+
+ISR(USART_RX_vect)
+{
+
+	USART_RX_DATA = UDR0;
+	if (USART_RX_DATA == 'k')
+	{
+		PORTB |= BIT(PORTB5);    // Writing HIGH to glow LED
+	}
+	else
+	{
+		PORTB &= ~BIT(PORTB5); // Writing LOW
+	}
+
+}
+
 void loop()
 {
 

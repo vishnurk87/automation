@@ -50,24 +50,32 @@ void USART(){
 	data[1] = 'k';
 	data[2] = 'b';
 	DR_Empty_Interrupt(data[0]);
+	
 }
 
 
 void USART_Recieve()
 {	
-
 	//set recieve complete RXCn bit to 1 if necessary to initiate the interupt
 	UCSR0B|= RX_READY_INTERUPT;
-
 }
 
+//fucntion to turn on tx complete interupt 
+void USART_Transmit()
+{	
+
+	//this creates an interupt when tx is complete
+	UCSR0B |= TX_COMPLETE_INTERUPT_ON;
+
+
+}
 void DR_Empty_Interrupt(uint8_t buffer)
 {	
 
 	//shufle changed to TX mode (TX_shuffle =1)
 	TX_shuffle = 1;
 	USART_TX_Buffer = buffer;
-	UCSR0A |= UDRE0;
+
 	UCSR0B|= DATA_REG_EMPTY_INTERUPT;
 
 }
@@ -80,6 +88,10 @@ void USART_init(unsigned int baud_rate)
 	
 	UBRR0H = (unsigned char)(baud_rate>>8);
 	UBRR0L = (unsigned char)baud_rate;
+
+	//clearing flags
+	UCSR0A &= ~BIT(RXC0);
+	UCSR0A &= ~BIT(TXC0);
 
 	// double speed to get correct baud rate for F_cpu
 	UCSR0A |= DOUBLE_TX_SPEED;
@@ -102,64 +114,47 @@ void USART_init(unsigned int baud_rate)
 
 //interupts
 
-ISR(USART_UDRE_vect)
-{	
-
-	PORTB &= ~BIT(PORTB5);
-	UDR0 = USART_TX_Buffer;
-
-	// Disables the Interrupt, uncomment for one time transmission of data
-	UCSR0B &= ~DATA_REG_EMPTY_INTERUPT; 
-
-
-	//this creates an interupt when tx is complete
-	UCSR0B |= TX_COMPLETE_INTERUPT_ON;
-	//delay(1000);
-}
-
-
-//transmit complete interupt
-ISR(USART_TX_vect)
-{	
-
-	//shufle changed to RX mode (TX_shuffle =0) after writing data into transmit buffer
-	TX_shuffle = 0;
-
-	//Transmit complete interupt turned off cause now it would be in recieve mode
-	UCSR0B &= ~TX_COMPLETE_INTERUPT_ON;
-
-	// Enables data empty interupt to check if no data is there in RX buffer
-	UCSR0B |= DATA_REG_EMPTY_INTERUPT; 
-
-	// this turns on RX flag which will cause an interupt when there is unread data 
-	//in the recieve buffer
-	USART_Recieve();
-
-
-
-}
-
 
 //recieve complete interrupt
 ISR(USART_RX_vect)
 {	
+
 	// Disables data empty interupt enabled in TX interupt and in the next lines reads the data
-	UCSR0B &= ~DATA_REG_EMPTY_INTERUPT; 
 
 	USART_RX_DATA = UDR0;
-	if (USART_RX_DATA == 'k')
-	{
-		PORTB |= BIT(PORTB5);    // Writing HIGH to glow LED
-	}
-	else
-	{
-		PORTB &= ~BIT(PORTB5); // Writing LOW
-	}
+	USART_TX_Buffer = USART_RX_DATA;
 
 	//disabls rx ready interupt.
 	UCSR0B &= ~RX_READY_INTERUPT;
-	USART();
+	
+	//USART_Transmit();
+
 }
+
+
+ISR(USART_TX_vect)
+{	
+
+	UDR0 = USART_TX_Buffer;
+
+
+	//UCSR0B &= ~TX_COMPLETE_INTERUPT_ON;
+
+	USART_Recieve();
+
+}
+
+ISR(USART_UDRE_vect)
+{	
+
+	UDR0 = USART_TX_Buffer;
+
+	UCSR0B &= ~DATA_REG_EMPTY_INTERUPT; 
+
+	USART_Transmit();
+}
+
+
 
 void loop()
 {
